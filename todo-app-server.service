@@ -1,0 +1,14 @@
+[Unit]
+Description=Todo App Server
+After=network.target
+
+[Service]
+Type=simple
+User=farah-yumman-zahid
+WorkingDirectory=/home/farah-yumman-zahid/todo-app-final
+ExecStart=/usr/bin/python3 -m http.server 8000 --bind 0.0.0.0
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
