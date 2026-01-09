@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quran Memorization Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            line-height: 1.5;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        h1 {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #1f2937;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .progress-circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #10b981;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+            margin-top: 24px;
+        }
+        
+        .stat-card {
+            padding: 16px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        
+        .stat-card h3 {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        
+        .stat-card p {
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+        
+        .blue { background: #eff6ff; color: #3b82f6; }
+        .green { background: #f0fdf4; color: #10b981; }
+        .purple { background: #faf5ff; color: #9333ea; }
+        .orange { background: #fff7ed; color: #f59e0b; }
+        
+        .tabs {
+            display: flex;
+            gap: 8px;
+            padding: 8px;
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 24px;
+        }
+        
+        .tab-button {
+            flex: 1;
+            padding: 12px 16px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .tab-button.active {
+            background: #10b981;
+            color: white;
+        }
+        
+        .tab-button:not(.active) {
+            background: #f3f4f6;
+            color: #374151;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+        }
+        
+        .item {
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .item:hover {
+            border-color: #10b981;
+        }
+        
+        .item.completed {
+            background: #f0fdf4;
+            border-color: #10b981;
+        }
+        
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .item h3 {
+            font-weight: bold;
+            font-size: 1.125rem;
+        }
+        
+        .checkmark {
+            font-size: 1.5rem;
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 12px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: #10b981;
+            transition: width 0.3s;
+        }
+        
+        .location-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        
+        .info-card {
+            padding: 16px;
+            border-radius: 12px;
+            background: #f0fdf4;
+            border: 1px solid #10b981;
+        }
+        
+        .time-display {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #10b981;
+        }
+        
+        select, input, button {
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        
+        select:focus, input:focus {
+            outline: none;
+            border-color: #10b981;
+        }
+        
+        button {
+            background: #10b981;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        button:hover {
+            background: #059669;
+        }
+        
+        .reminder-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+        }
+        
+        .reminder-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px;
+            background: white;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+        }
+        
+        .search-box {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            font-size: 16px;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 24px;
+            border-radius: 16px;
+            max-width: 500px;
+            width: 90%;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+        }
+        
+        .button-group button {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="card">
+            <div class="header">
+                <div>
+                    <h1>📖 قاری ڈیش بورڈ</h1>
+                    <p style="color: #6b7280; margin-top: 8px;">Track your Quran memorization progress</p>
+                </div>
+                <div class="progress-circle" id="overallProgress">0%</div>
+            </div>
+            
+            <div class="stats">
+                <div class="stat-card blue">
+                    <h3 id="completedParas">0/30</h3>
+                    <p>Paras Completed</p>
+                </div>
+                <div class="stat-card green">
+                    <h3 id="completedSurahs">0/114</h3>
+                    <p>Surahs Completed</p>
+                </div>
+                <div class="stat-card purple">
+                    <h3 id="remainingSurahs">114</h3>
+                    <p>Surahs Remaining</p>
+                </div>
+                <div class="stat-card orange">
+                    <h3 id="remainingParas">30</h3>
+                    <p>Paras Remaining</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Time and Location Display -->
+        <div class="card">
+            <div class="location-info">
+                <div class="info-card">
+                    <div style="font-size: 0.875rem; color: #6b7280;">Current Time</div>
+                    <div class="time-display" id="currentTime">00:00:00</div>
+                    <div id="currentDate" style="font-size: 0.875rem; color: #6b7280;">Loading...</div>
+                </div>
+                
+                <div class="info-card">
+                    <div style="font-size: 0.875rem; color: #6b7280;">Location</div>
+                    <div style="font-weight: bold; font-size: 1.125rem;" id="currentCity">Karachi</div>
+                    <div style="font-size: 0.875rem; color: #6b7280;" id="currentCountry">Pakistan</div>
+                    <div style="font-size: 0.75rem; color: #3b82f6;" id="currentTimezone">Asia/Karachi</div>
+                </div>
+
+                <div class="info-card">
+                    <div style="font-size: 0.875rem; color: #6b7280;">Notifications</div>
+                    <div id="notificationStatus" class="time-display" style="font-size: 1.25rem;">🔔 Enabled</div>
+                    <button onclick="requestNotificationPermission()" style="margin-top: 8px; font-size: 0.75rem; padding: 4px 8px;">
+                        Enable Notifications
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab-button active" onclick="switchTab('paras')">30 Paras</button>
+            <button class="tab-button" onclick="switchTab('surahs')">114 Surahs</button>
+            <button class="tab-button" onclick="switchTab('reminders')">🕌 Reminders</button>
+        </div>
+
+        <!-- Paras Tab -->
+        <div id="parasTab" class="card">
+            <h2 style="font-size: 1.5rem; font-weight: bold; margin-bottom: 24px;">30 Paras - Complete Quran</h2>
+            <div class="grid" id="parasGrid"></div>
+        </div>
+
+        <!-- Surahs Tab -->
+        <div id="surahsTab" class="card" style="display: none;">
+            <h2 style="font-size: 1.5rem; font-weight: bold; margin-bottom: 16px;">114 Surahs</h2>
+            <input type="text" class="search-box" placeholder="🔍 Search surah..." onkeyup="filterSurahs(this.value)">
+            <select id="filterType" onchange="filterSurahs()" style="margin-bottom: 16px;">
+                <option value="all">All Surahs</option>
+                <option value="completed">Completed</option>
+                <option value="incomplete">Incomplete</option>
+            </select>
+            <div class="grid" id="surahsGrid"></div>
+        </div>
+
+        <!-- Reminders Tab -->
+        <div id="remindersTab" class="card" style="display: none;">
+            <h2 style="font-size: 1.5rem; font-weight: bold; margin-bottom: 24px;">🕌 Prayer & Quran Reminders</h2>
+            
+            <!-- Location Settings -->
+            <div style="background: #eff6ff; padding: 16px; border-radius: 12px; margin-bottom: 24px;">
+                <h3 style="font-weight: bold; margin-bottom: 16px;">Location Settings</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                    <div>
+                        <label style="display: block; margin-bottom: 8px; font-weight: 500;">Country</label>
+                        <select id="countrySelect" onchange="updateCountry()" style="width: 100%;"></select>
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 8px; font-weight: 500;">City</label>
+                        <select id="citySelect" onchange="updateCity()" style="width: 100%;"></select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Prayer Times -->
+            <div style="background: #f0fdf4; padding: 16px; border-radius: 12px; margin-bottom: 24px;">
+                <h3 style="font-weight: bold; margin-bottom: 16px;">Prayer Times</h3>
+                <div class="reminder-grid" id="prayerTimesGrid"></div>
+            </div>
+
+            <!-- Reminder Controls -->
+            <div style="background: #fef3c7; padding: 16px; border-radius: 12px;">
+                <h3 style="font-weight: bold; margin-bottom: 16px;">Enable/Disable Reminders</h3>
+                <div class="reminder-grid" id="reminderControlsGrid"></div>
+            </div>
+        </div>
+
+        <!-- Progress Modal -->
+        <div id="progressModal" class="modal">
+            <div class="modal-content">
+                <h3 style="margin-bottom: 16px;">Update Progress</h3>
+                <div style="margin-bottom: 16px;">
+                    <label id="modalLabel" style="display: block; margin-bottom: 8px; font-weight: 500;">Enter progress</label>
+                    <input type="number" id="progressInput" min="0" style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;">
+                </div>
+                <div style="margin-bottom: 16px;">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="modalProgress" style="width: 0%"></div>
+                    </div>
+                    <div id="modalProgressText" style="margin-top: 8px; font-size: 0.875rem; color: #6b7280;">0% complete</div>
+                </div>
+                <div class="button-group">
+                    <button onclick="saveProgress()" style="background: #10b981;">Save Progress</button>
+                    <button onclick="closeModal()" style="background: #6b7280;">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Quran data
+        const quranData = {
+            paras: Array.from({ length: 30 }, (_, i) => ({
+                id: i + 1,
+                name: `پارہ ${i + 1}`,
+                completed: false,
+                progress: 0,
+                lastRead: null
+            })),
+            surahs: [
+                { id: 1, name: "الفاتحہ", english: "Al-Fatihah", ayats: 7, para: 1, completed: false, progress: 0 },
+                { id: 2, name: "البقرۃ", english: "Al-Baqarah", ayats: 286, para: 1, completed: false, progress: 0 },
+                { id: 3, name: "آل عمران", english: "Aal-E-Imran", ayats: 200, para: 3, completed: false, progress: 0 },
+                { id: 4, name: "النساء", english: "An-Nisa", ayats: 176, para: 4, completed: false, progress: 0 },
+                { id: 5, name: "المائدۃ", english: "Al-Ma'idah", ayats: 120, para: 6, completed: false, progress: 0 },
+                { id: 6, name: "الانعام", english: "Al-An'am", ayats: 165, para: 7, completed: false, progress: 0 },
+                { id: 7, name: "الاعراف", english: "Al-A'raf", ayats: 206, para: 8, completed: false, progress: 0 },
+                { id: 8, name: "الانفال", english: "Al-Anfal", ayats: 75, para: 9, completed: false, progress: 0 },
+                { id: 9, name: "التوبۃ", english: "At-Tawbah", ayats: 129, para: 10, completed: false, progress: 0 },
+                { id: 10, name: "یونس", english: "Yunus", ayats: 109, para: 11, completed: false, progress: 0 },
+                { id: 11, name: "ہود", english: "Hud", ayats: 123, para: 12, completed: false, progress: 0 },
+                { id: 12, name: "یوسف", english: "Yusuf", ayats: 111, para: 12, completed: false, progress: 0 },
+                { id: 13, name: "الرعد", english: "Ar-Ra'd", ayats: 43, para: 13, completed: false, progress: 0 },
+                { id: 14, name: "ابراہیم", english: "Ibrahim", ayats: 52, para: 13, completed: false, progress: 0 },
+                { id: 15, name: "الحجر", english: "Al-Hijr", ayats: 99, para: 14, completed: false, progress: 0 },
+                { id: 16, name: "النحل", english: "An-Nahl", ayats: 128, para: 14, completed: false, progress: 0 },
+                { id: 17, name: "الاسراء", english: "Al-Isra", ayats: 111, para: 15, completed: false, progress: 0 },
+                { id: 18, name: "الکہف", english: "Al-Kahf", ayats: 110, para: 15, completed: false, progress: 0 },
+                { id: 19, name: "مریم", english: "Maryam", ayats: 98, para: 16, completed: false, progress: 0 },
+                { id: 20, name: "طہ", english: "Ta-Ha", ayats: 135, para: 16, completed: false, progress: 0 },
+                { id: 21, name: "الانبیاء", english: "Al-Anbiya", ayats: 112, para: 17, completed: false, progress: 0 },
+                { id: 22, name: "الحج", english: "Al-Hajj", ayats: 78, para: 17, completed: false, progress: 0 },
+                { id: 23, name: "المؤمنون", english: "Al-Mu'minun", ayats: 118, para: 18, completed: false, progress: 0 },
+                { id: 24, name: "النور", english: "An-Nur", ayats: 64, para: 18, completed: false, progress: 0 },
+                { id: 25, name: "الفرقان", english: "Al-Furqan", ayats: 77, para: 19, completed: false, progress: 0 },
+                { id: 26, name: "الشعراء", english: "Ash-Shu'ara", ayats: 227, para: 19, completed: false, progress: 0 },
+                { id: 27, name: "النمل", english: "An-Naml", ayats: 93, para: 19, completed: false, progress: 0 },
+                { id: 28, name: "القصص", english: "Al-Qasas", ayats: 88, para: 20, completed: false, progress: 0 },
+                { id: 29, name: "العنکبوت", english: "Al-Ankabut", ayats: 69, para: 20, completed: false, progress: 0 },
+                { id: 30, name: "الروم", english: "Ar-Rum", ayats: 60, para: 21, completed: false, progress: 0 },
+                { id: 31, name: "لقمان", english: "Luqman", ayats: 34, para: 21, completed: false, progress: 0 },
+                { id: 32, name: "السجدۃ", english: "As-Sajda", ayats: 30, para: 21, completed: false, progress: 0 },
+                { id: 33, name: "الاحزاب", english: "Al-Ahzab", ayats: 73, para: 22, completed: false, progress: 0 },
+                { id: 34, name: "سبأ", english: "Saba", ayats: 54, para: 22, completed: false, progress: 0 },
+                { id: 35, name: "فاطر", english: "Fatir", ayats: 45, para: 22, completed: false, progress: 0 },
+                { id: 36, name: "یس", english: "Ya-Sin", ayats: 83, para: 23, completed: false, progress: 0 },
+                { id: 37, name: "الصافات", english: "As-Saffat", ayats: 182, para: 23, completed: false, progress: 0 },
+                { id: 38, name: "ص", english: "Sad", ayats: 88, para: 23, completed: false, progress: 0 },
+                { id: 39, name: "الزمر", english: "Az-Zumar", ayats: 75, para: 23, completed: false, progress: 0 },
+                { id: 40, name: "غافر", english: "Al-Mu'min", ayats: 85, para: 24, completed: false, progress: 0 },
+                { id: 41, name: "فصلت", english: "Fussilat", ayats: 54, para: 24, completed: false, progress: 0 },
+                { id: 42, name: "الشورى", english: "Ash-Shura", ayats: 53, para: 25, completed: false, progress: 0 },
+                { id: 43, name: "الزخرف", english: "Az-Zukhruf", ayats: 89, para: 25, completed: false, progress: 0 },
+                { id: 44, name: "الدخان", english: "Ad-Dukhan", ayats: 59, para: 25, completed: false, progress: 0 },
+                { id: 45, name: "الجاثیۃ", english: "Al-Jathiya", ayats: 37, para: 25, completed: false, progress: 0 },
+                { id: 46, name: "الاحقاف", english: "Al-Ahqaf", ayats: 35, para: 26, completed: false, progress: 0 },
+                { id: 47, name: "محمد", english: "Muhammad", ayats: 38, para: 26, completed: false, progress: 0 },
+                { id: 48, name: "الفتح", english: "Al-Fath", ayats: 29, para: 26, completed: false, progress: 0 },
+                { id: 49, name: "الحجرات", english: "Al-Hujurat", ayats: 18, para: 26, completed: false, progress: 0 },
+                { id: 50, name: "ق", english: "Qaf", ayats: 45, para: 26, completed: false, progress: 0 },
+                { id: 51, name: "الذاریات", english: "Az-Zariyat", ayats: 60, para: 27, completed: false, progress: 0 },
+                { id: 52, name: "الطور", english: "At-Tur", ayats: 49, para: 27, completed: false, progress: 0 },
+                { id: 53, name: "النجم", english: "An-Najm", ayats: 62, para: 27, completed: false, progress: 0 },
+                { id: 54, name: "القمر", english: "Al-Qamar", ayats: 55, para: 27, completed: false, progress: 0 },
+                { id: 55, name: "الرحمٰن", english: "Ar-Rahman", ayats: 78, para: 27, completed: false, progress: 0 },
+                { id: 56, name: "الواقعۃ", english: "Al-Waqi'a", ayats: 96, para: 27, completed: false, progress: 0 },
+                { id: 57, name: "الحدید", english: "Al-Hadid", ayats: 29, para: 27, completed: false, progress: 0 },
+                { id: 58, name: "المجادلۃ", english: "Al-Mujadila", ayats: 22, para: 28, completed: false, progress: 0 },
+                { id: 59, name: "الحشر", english: "Al-Hashr", ayats: 24, para: 28, completed: false, progress: 0 },
+                { id: 60, name: "الممتحنۃ", english: "Al-Mumtahana", ayats: 13, para: 28, completed: false, progress: 0 },
+                { id: 61, name: "الصف", english: "As-Saff", ayats: 14, para: 28, completed: false, progress: 0 },
+                { id: 62, name: "الجمعۃ", english: "Al-Jumu'a", ayats: 11, para: 28, completed: false, progress: 0 },
+                { id: 63, name: "المنافقون", english: "Al-Munafiqun", ayats: 11, para: 28, completed: false, progress: 0 },
+                { id: 64, name: "التغابن", english: "At-Taghabun", ayats: 18, para: 28, completed: false, progress: 0 },
+                { id: 65, name: "الطلق", english: "At-Talaq", ayats: 12, para: 28, completed: false, progress: 0 },
+                { id: 66, name: "التحریم", english: "At-Tahrim", ayats: 12, para: 28, completed: false, progress: 0 },
+                { id: 67, name: "الملک", english: "Al-Mulk", ayats: 30, para: 29, completed: false, progress: 0 },
+                { id: 68, name: "القلم", english: "Al-Qalam", ayats: 52, para: 29, completed: false, progress: 0 },
+                { id: 69, name: "الحاقۃ", english: "Al-Haqqah", ayats: 52, para: 29, completed: false, progress: 0 },
+                { id: 70, name: "المعارج", english: "Al-Ma'arij", ayats: 44, para: 29, completed: false, progress: 0 },
+                { id: 71, name: "نوح", english: "Nuh", ayats: 28, para: 29, completed: false, progress: 0 },
+                { id: 72, name: "الجن", english: "Al-Jinn", ayats: 28, para: 29, completed: false, progress: 0 },
+                { id: 73, name: "المزمل", english: "Al-Muzzammil", ayats: 20, para: 29, completed: false, progress: 0 },
+                { id: 74, name: "المدثر", english: "Al-Muddaththir", ayats: 56, para: 29, completed: false, progress: 0 },
+                { id: 75, name: "القیامۃ", english: "Al-Qiyamah", ayats: 40, para: 29, completed: false, progress: 0 },
+                { id: 76, name: "الانسان", english: "Al-Insan", ayats: 31, para: 29, completed: false, progress: 0 },
+                { id: 77, name: "المرسلات", english: "Al-Mursalat", ayats: 50, para: 29, completed: false, progress: 0 },
+                { id: 78, name: "النبأ", english: "An-Naba", ayats: 40, para: 30, completed: false, progress: 0 },
+                { id: 79, name: "النازعات", english: "An-Nazi'at", ayats: 46, para: 30, completed: false, progress: 0 },
+                { id: 80, name: "عبس", english: "Abasa", ayats: 42, para: 30, completed: false, progress: 0 },
+                { id: 81, name: "التکویر", english: "At-Takwir", ayats: 29, para: 30, completed: false, progress: 0 },
+                { id: 82, name: "الانفطار", english: "Al-Infitar", ayats: 19, para: 30, completed: false, progress: 0 },
+                { id: 83, name: "المطففین", english: "Al-Mutaffifin", ayats: 36, para: 30, completed: false, progress: 0 },
+                { id: 84, name: "الانشقاق", english: "Al-Inshiqaq", ayats: 25, para: 30, completed: false, progress: 0 },
+                { id: 85, name: "البروج", english: "Al-Buruj", ayats: 22, para: 30, completed: false, progress: 0 },
+                { id: 86, name: "الطارق", english: "At-Tariq", ayats: 17, para: 30, completed: false, progress: 0 },
+                { id: 87, name: "الاعلى", english: "Al-A'la", ayats: 19, para: 30, completed: false, progress: 0 },
+                { id: 88, name: "الغاشیۃ", english: "Al-Ghashiyah", ayats: 26, para: 30, completed: false, progress: 0 },
+                { id: 89, name: "الفجر", english: "Al-Fajr", ayats: 30, para: 30, completed: false, progress: 0 },
+                { id: 90, name: "البلد", english: "Al-Balad", ayats: 20, para: 30, completed: false, progress: 0 },
+                { id: 91, name: "الشمس", english: "Ash-Shams", ayats: 15, para: 30, completed: false, progress: 0 },
+                { id: 92, name: "اللیل", english: "Al-Lail", ayats: 21, para: 30, completed: false, progress: 0 },
+                { id: 93, name: "الضحی", english: "Ad-Duha", ayats: 11, para: 30, completed: false, progress: 0 },
+                { id: 94, name: "الشرح", english: "Ash-Sharh", ayats: 8, para: 30, completed: false, progress: 0 },
+                { id: 95, name: "التین", english: "At-Tin", ayats: 8, para: 30, completed: false, progress: 0 },
+                { id: 96, name: "العلق", english: "Al-Alaq", ayats: 19, para: 30, completed: false, progress: 0 },
+                { id: 97, name: "القدر", english: "Al-Qadr", ayats: 5, para: 30, completed: false, progress: 0 },
+                { id: 98, name: "البینۃ", english: "Al-Bayyinah", ayats: 8, para: 30, completed: false, progress: 0 },
+                { id: 99, name: "الزلزال", english: "Az-Zalzalah", ayats: 8, para: 30, completed: false, progress: 0 },
+                { id: 100, name: "العادیات", english: "Al-Adiyat", ayats: 11, para: 30, completed: false, progress: 0 },
+                { id: 101, name: "القارعۃ", english: "Al-Qari'ah", ayats: 11, para: 30, completed: false, progress: 0 },
+                { id: 102, name: "التکاثر", english: "At-Takathur", ayats: 8, para: 30, completed: false, progress: 0 },
+                { id: 103, name: "العصر", english: "Al-Asr", ayats: 3, para: 30, completed: false, progress: 0 },
+                { id: 104, name: "ہمزۃ", english: "Al-Humazah", ayats: 9, para: 30, completed: false, progress: 0 },
+                { id: 105, name: "الفیل", english: "Al-Fil", ayats: 5, para: 30, completed: false, progress: 0 },
+                { id: 106, name: "قریش", english: "Quraysh", ayats: 4, para: 30, completed: false, progress: 0 },
+                { id: 107, name: "الماعون", english: "Al-Ma'un", ayats: 7, para: 30, completed: false, progress: 0 },
+                { id: 108, name: "الکوثری", english: "Al-Kawthar", ayats: 3, para: 30, completed: false, progress: 0 },
+                { id: 109, name: "الکافرون", english: "Al-Kafirun", ayats: 6, para: 30, completed: false, progress: 0 },
+                { id: 110, name: "النصر", english: "An-Nasr", ayats: 3, para: 30, completed: false, progress: 0 },
+                { id: 111, name: "مسد", english: "Al-Masad", ayats: 5, para: 30, completed: false, progress: 0 },
+                { id: 112, name: "الاخلاص", english: "Al-Ikhlas", ayats: 4, para: 30, completed: false, progress: 0 },
+                { id: 113, name: "الجحٖد", english: "Al-Falaq", ayats: 5, para: 30, completed: false, progress: 0 },
+                { id: 114, name: "الناس", english: "An-Nas", ayats: 6, para: 30, completed: false, progress: 0 }
+            ]
+        };
+
+        // Countries data
+        const countries = [
+            { name: "Pakistan", cities: ["Karachi", "Lahore", "Islamabad", "Peshawar", "Quetta"], timezone: "Asia/Karachi", prayers: ["4:30", "12:30", "15:30", "18:30", "19:45", "20:30"] },
+            { name: "Saudi Arabia", cities: ["Makkah", "Madinah", "Riyadh", "Jeddah"], timezone: "Asia/Riyadh", prayers: ["4:00", "12:00", "15:00", "18:00", "19:15", "20:00"] },
+            { name: "UAE", cities: ["Dubai", "Abu Dhabi", "Sharjah", "Ajman"], timezone: "Asia/Dubai", prayers: ["4:15", "12:15", "15:15", "18:15", "19:30", "20:15"] },
+            { name: "India", cities: ["Delhi", "Mumbai", "Hyderabad", "Bangalore"], timezone: "Asia/Kolkata", prayers: ["4:45", "12:45", "15:45", "18:45", "19:30", "20:15"] },
+            { name: "UK", cities: ["London", "Birmingham", "Manchester", "Bradford"], timezone: "Europe/London", prayers: ["3:30", "12:30", "15:30", "18:30", "19:45", "20:30"] },
+            { name: "USA", cities: ["New York", "Chicago", "Los Angeles", "Houston"], timezone: "America/New_York", prayers: ["4:00", "12:00", "15:00", "18:00", "19:30", "20:00"] }
+        ];
+
+        // Global variables
+        let currentTab = 'paras';
+        let paras = [...quranData.paras];
+        let surahs = [...quranData.surahs];
+        let currentCountry = countries[0];
+        let currentCity = countries[0].cities[0];
+        let reminders = {
+            fajr: true,
+            dhuhr: true,
+            asr: true,
+            maghrib: true,
+            isha: true,
+            tahajjud: false
+        };
+        let selectedPara = null;
+        let selectedSurah = null;
+
+        // Initialize
+        function init() {
+            loadData();
+            renderParas();
+            renderSurahs();
+            updateStats();
+            setupLocationSelectors();
+            renderPrayerTimes();
+            renderReminderControls();
+            updateTime();
+            setInterval(updateTime, 1000);
+        }
+
+        // Load data from localStorage
+        function loadData() {
+            const savedParas = localStorage.getItem('quranParas');
+            const savedSurahs = localStorage.getItem('quranSurahs');
+            const savedCountry = localStorage.getItem('quranCountry');
+            const savedCity = localStorage.getItem('quranCity');
+            const savedReminders = localStorage.getItem('quranReminders');
+            
+            if (savedParas) paras = JSON.parse(savedParas);
+            if (savedSurahs) surahs = JSON.parse(savedSurahs);
+            if (savedReminders) reminders = JSON.parse(savedReminders);
+            if (savedCountry) {
+                currentCountry = countries.find(c => c.name === savedCountry) || countries[0];
+                currentCity = savedCity || currentCountry.cities[0];
+            }
+        }
+
+        // Save data to localStorage
+        function saveData() {
+            localStorage.setItem('quranParas', JSON.stringify(paras));
+            localStorage.setItem('quranSurahs', JSON.stringify(surahs));
+            localStorage.setItem('quranCountry', currentCountry.name);
+            localStorage.setItem('quranCity', currentCity);
+            localStorage.setItem('quranReminders', JSON.stringify(reminders));
+        }
+
+        // Switch tabs
+        function switchTab(tab) {
+            currentTab = tab;
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.card > div[id$="Tab"]').forEach(content => content.style.display = 'none');
+            
+            event.target.classList.add('active');
+            document.getElementById(tab + 'Tab').style.display = 'block';
+        }
+
+        // Update time
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('currentTime').textContent = now.toLocaleTimeString();
+            document.getElementById('currentDate').textContent = now.toLocaleDateString('en-US', { 
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            document.getElementById('currentCity').textContent = currentCity;
+            document.getElementById('currentCountry').textContent = currentCountry.name;
+            document.getElementById('currentTimezone').textContent = currentCountry.timezone;
+        }
+
+        // Setup location selectors
+        function setupLocationSelectors() {
+            const countrySelect = document.getElementById('countrySelect');
+            const citySelect = document.getElementById('citySelect');
+            
+            countrySelect.innerHTML = countries.map(c => 
+                `<option value="${c.name}" ${c.name === currentCountry.name ? 'selected' : ''}>${c.name}</option>`
+            ).join('');
+            
+            updateCitySelector();
+        }
+
+        function updateCountry() {
+            const select = document.getElementById('countrySelect');
+            currentCountry = countries.find(c => c.name === select.value);
+            currentCity = currentCountry.cities[0];
+            updateCitySelector();
+            renderPrayerTimes();
+            saveData();
+        }
+
+        function updateCitySelector() {
+            const citySelect = document.getElementById('citySelect');
+            citySelect.innerHTML = currentCountry.cities.map(city => 
+                `<option value="${city}" ${city === currentCity ? 'selected' : ''}>${city}</option>`
+            ).join('');
+        }
+
+        function updateCity() {
+            currentCity = document.getElementById('citySelect').value;
+            saveData();
+        }
+
+        // Render functions
+        function renderParas() {
+            const grid = document.getElementById('parasGrid');
+            grid.innerHTML = paras.map(para => `
+                <div class="item ${para.completed ? 'completed' : ''}" onclick="openParaModal(${para.id})">
+                    <div class="item-header">
+                        <h3>${para.name}</h3>
+                        <span class="checkmark">${para.completed ? '✓' : '○'}</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${para.progress}%"></div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderSurahs() {
+            renderFilteredSurahs(surahs);
+        }
+
+        function renderFilteredSurahs(surahList) {
+            const grid = document.getElementById('surahsGrid');
+            grid.innerHTML = surahList.map(surah => `
+                <div class="item ${surah.completed ? 'completed' : ''}" onclick="openSurahModal(${surah.id})">
+                    <div class="item-header">
+                        <div>
+                            <h3>${surah.name}</h3>
+                            <p style="color: #6b7280; font-size: 0.875rem;">${surah.english}</p>
+                            <p style="color: #9ca3af; font-size: 0.75rem;">Para ${surah.para} • ${surah.ayats} ayats</p>
+                        </div>
+                        <span class="checkmark">${surah.completed ? '✓' : '○'}</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${surah.progress}%"></div>
+                    </div>
+                    <div style="margin-top: 8px; font-size: 0.75rem; color: #6b7280;">${surah.progress}% memorized</div>
+                </div>
+            `).join('');
+        }
+
+        function renderPrayerTimes() {
+            const grid = document.getElementById('prayerTimesGrid');
+            const prayerNames = ['Fajr 🌅', 'Dhuhr ☀️', 'Asr 🌤️', 'Maghrib 🌇', 'Isha 🌙', 'Tahajjud ⭐'];
+            grid.innerHTML = currentCountry.prayers.map((time, index) => `
+                <div class="item" style="text-align: center;">
+                    <div style="font-weight: bold;">${prayerNames[index]}</div>
+                    <div style="font-size: 1.125rem; color: #10b981; margin: 8px 0;">${time}</div>
+                    <div style="font-size: 0.75rem; color: #6b7280;">Prayer Time</div>
+                </div>
+            `).join('');
+        }
+
+        function renderReminderControls() {
+            const grid = document.getElementById('reminderControlsGrid');
+            const reminderNames = {
+                fajr: 'Fajr 🌅',
+                dhuhr: 'Dhuhr ☀️',
+                asr: 'Asr 🌤️',
+                maghrib: 'Maghrib 🌇',
+                isha: 'Isha 🌙',
+                tahajjud: 'Tahajjud ⭐'
+            };
+            
+            grid.innerHTML = Object.entries(reminderNames).map(([key, label]) => `
+                <label class="reminder-item">
+                    <input type="checkbox" ${reminders[key] ? 'checked' : ''} onchange="toggleReminder('${key}')">
+                    <span>${label}</span>
+                </label>
+            `).join('');
+        }
+
+        // Modal functions
+        function openParaModal(paraId) {
+            selectedPara = paras.find(p => p.id === paraId);
+            selectedSurah = null;
+            document.getElementById('modalLabel').textContent = 'Progress Percentage';
+            document.getElementById('progressInput').placeholder = 'Enter percentage (0-100)';
+            document.getElementById('progressInput').value = selectedPara.progress;
+            document.getElementById('progressInput').max = 100;
+            updateModalProgress(selectedPara.progress);
+            document.getElementById('progressModal').style.display = 'flex';
+        }
+
+        function openSurahModal(surahId) {
+            selectedSurah = surahs.find(s => s.id === surahId);
+            selectedPara = null;
+            document.getElementById('modalLabel').textContent = `Verses Read (out of ${selectedSurah.ayats})`;
+            document.getElementById('progressInput').placeholder = `Enter verses read (0-${selectedSurah.ayats})`;
+            document.getElementById('progressInput').value = Math.round(selectedSurah.progress / 100 * selectedSurah.ayats);
+            document.getElementById('progressInput').max = selectedSurah.ayats;
+            updateModalProgress(selectedSurah.progress);
+            document.getElementById('progressModal').style.display = 'flex';
+        }
+
+        function updateModalProgress(value) {
+            const progress = selectedSurah ? 
+                Math.round((value / selectedSurah.ayats) * 100) : 
+                Math.min(100, Math.max(0, value));
+            
+            document.getElementById('modalProgress').style.width = progress + '%';
+            document.getElementById('modalProgressText').textContent = 
+                selectedSurah ? 
+                    `${progress}% complete (${value}/${selectedSurah.ayats} verses)` : 
+                    `${progress}% complete`;
+        }
+
+        function saveProgress() {
+            const value = parseInt(document.getElementById('progressInput').value) || 0;
+            
+            if (selectedSurah) {
+                const progress = Math.round((value / selectedSurah.ayats) * 100);
+                selectedSurah.progress = Math.min(100, Math.max(0, progress));
+                selectedSurah.completed = selectedSurah.progress === 100;
+                selectedSurah.lastRead = new Date().toISOString();
+                renderSurahs();
+            } else if (selectedPara) {
+                selectedPara.progress = Math.min(100, Math.max(0, value));
+                selectedPara.completed = selectedPara.progress === 100;
+                selectedPara.lastRead = new Date().toISOString();
+                renderParas();
+            }
+            
+            updateStats();
+            saveData();
+            closeModal();
+        }
+
+        function closeModal() {
+            document.getElementById('progressModal').style.display = 'none';
+            document.getElementById('progressInput').oninput = null;
+        }
+
+        // Filter functions
+        function filterSurahs(searchTerm) {
+            const filterType = document.getElementById('filterType').value;
+            let filtered = surahs;
+            
+            if (searchTerm) {
+                filtered = filtered.filter(surah => 
+                    surah.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    surah.english.toLowerCase().includes(searchTerm.toLowerCase())
+                );
+            }
+            
+            if (filterType === 'completed') {
+                filtered = filtered.filter(s => s.completed);
+            } else if (filterType === 'incomplete') {
+                filtered = filtered.filter(s => !s.completed);
+            }
+            
+            renderFilteredSurahs(filtered);
+        }
+
+        // Update stats
+        function updateStats() {
+            const completedParas = paras.filter(p => p.completed).length;
+            const completedSurahs = surahs.filter(s => s.completed).length;
+            const overallProgress = Math.round(((completedParas * 100 / 30) + (completedSurahs * 100 / 114)) / 2);
+            
+            document.getElementById('overallProgress').textContent = overallProgress + '%';
+            document.getElementById('completedParas').textContent = `${completedParas}/30`;
+            document.getElementById('completedSurahs').textContent = `${completedSurahs}/114`;
+            document.getElementById('remainingSurahs').textContent = 114 - completedSurahs;
+            document.getElementById('remainingParas').textContent = 30 - completedParas;
+        }
+
+        // Reminder functions
+        function toggleReminder(prayer) {
+            reminders[prayer] = !reminders[prayer];
+            renderReminderControls();
+            saveData();
+        }
+
+        function requestNotificationPermission() {
+            if ('Notification' in window) {
+                Notification.requestPermission().then(permission => {
+                    document.getElementById('notificationStatus').textContent = 
+                        permission === 'granted' ? '🔔 Enabled' : '🔕 Disabled';
+                });
+            }
+        }
+
+        // Input handler for progress modal
+        document.addEventListener('DOMContentLoaded', function() {
+            const progressInput = document.getElementById('progressInput');
+            if (progressInput) {
+                progressInput.addEventListener('input', function() {
+                    updateModalProgress(this.value);
+                });
+            }
+        });
+
+        // Initialize when DOM is ready
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
